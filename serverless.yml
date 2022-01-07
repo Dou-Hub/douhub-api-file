@@ -1,25 +1,32 @@
-service: ${self:custom.apiPrefix}
+service: ${self:custom.apiNamePrefix}
+
+disabledDeprecations:
+  - CODE_1 # To disable specific deprecation with code "CODE_1"
+  - '*' # To disable all deprecation messages
 
 plugins:
-  - serverless-bundle
   - serverless-domain-manager
   - serverless-plugin-external-sns-events
   - serverless-api-compression
+  - serverless-plugin-typescript
+  - serverless-offline
 
-custom: ${file(../../serverless.common.yml):custom}
 
-package: ${file(../../serverless.common.yml):package}
+custom: ${file(../serverless.common.yml):custom}
+
+package: ${file(../serverless.common.yml):package}
 
 provider:
   name: aws
-  runtime: nodejs12.x
-  memorySize: 1024 #MB
-  timeout: 10 #Seconds
-  deploymentBucket: ${self:custom.prefix}-serverless
+  runtime: nodejs14.x
+  memorySize: 512 #MB
+  timeout: 25 #Seconds
+  region: ${self:custom.region}
+  deploymentBucket: ${self:custom.deploymentBucket}
   role: arn:aws:iam::${self:custom.accountId}:role/${self:custom.roleName}
-  environment: ${file(../../serverless.common.yml):environment}
+  environment: ${file(../serverless.common.yml):environment}
   apiGateway: # Optional API Gateway global config
-    minimumCompressionSize: 1024 # Compress response when larger than specified size in bytes (must be between 0 and 10485760)
+    minimumCompressionSize: 512 # Compress response when larger than specified size in bytes (must be between 0 and 10485760)
 
 functions:
   uploadSetting: 
@@ -28,74 +35,76 @@ functions:
       - http: 
           path: upload-setting
           method: post
-          cors: ${file(../../serverless.common.yml):cors}
+          cors: ${file(../serverless.common.yml):cors}
           integration: lambda
-  uploadFile: 
-    handler: index.uploadFile 
-    events:
-      - http: 
-          path: upload
-          method: post
-          cors: ${file(../../serverless.common.yml):cors}
-          integration: lambda
-      - http: 
-          path: upload
-          method: put
-          cors: ${file(../../serverless.common.yml):cors}
-          integration: lambda
-  retrieveFile:
-    handler: index.retrieveFile 
-    events:
-      - http: 
-          path: retrieve/{id}
-          method: get
-          cors: ${file(../../serverless.common.yml):cors}
-          integration: lambda
-          response:
-            headers:
-              Location: integration.response.body.location
-            statusCodes:
-                302:
-                    pattern: ''
-  delete:
-      handler: index.deleteFile 
-      events:
-        - http: 
-            path: delete
-            method: delete
-            cors: ${file(../../serverless.common.yml):cors}
-            integration: lambda
-        - http: 
-            path: delete
-            method: post
-            cors: ${file(../../serverless.common.yml):cors}
-            integration: lambda
-  videoPlayer:
-    handler: index.videoPlayer 
-    events:
-      - http: 
-          path: video-player/{id}
-          method: get
-          cors: ${file(../../serverless.common.yml):cors}
-          integration: lambda
-          response:
-            headers:
-              SET-COOKIE: integration.response.body.cookie1
-              SET-COOKIe: integration.response.body.cookie2
-              SET-COOKie: integration.response.body.cookie3
-              Content-Type: "'text/html'"
-            template: $input.path('$.html')
-  avatar:
-    handler: index.avatar 
-    events:
-      - http: 
-          path: avatar/{id}
-          method: get
-          cors: ${file(../../serverless.common.yml):cors}
-          integration: lambda
-          response:
-            headers:
-              Location: integration.response.body.location
-            statusCodes:
-                302:
-                    pattern: ''
+          response: ${file(../serverless.common.yml):response}
+
+  # uploadFile: 
+  #   handler: index.uploadFile 
+  #   events:
+  #     - http: 
+  #         path: upload
+  #         method: post
+  #         cors: ${file(../../serverless.common.yml):cors}
+  #         integration: lambda
+  #     - http: 
+  #         path: upload
+  #         method: put
+  #         cors: ${file(../../serverless.common.yml):cors}
+  #         integration: lambda
+  # retrieveFile:
+  #   handler: index.retrieveFile 
+  #   events:
+  #     - http: 
+  #         path: retrieve/{id}
+  #         method: get
+  #         cors: ${file(../../serverless.common.yml):cors}
+  #         integration: lambda
+  #         response:
+  #           headers:
+  #             Location: integration.response.body.location
+  #           statusCodes:
+  #               302:
+  #                   pattern: ''
+  # delete:
+  #     handler: index.deleteFile 
+  #     events:
+  #       - http: 
+  #           path: delete
+  #           method: delete
+  #           cors: ${file(../../serverless.common.yml):cors}
+  #           integration: lambda
+  #       - http: 
+  #           path: delete
+  #           method: post
+  #           cors: ${file(../../serverless.common.yml):cors}
+  #           integration: lambda
+  # videoPlayer:
+  #   handler: index.videoPlayer 
+  #   events:
+  #     - http: 
+  #         path: video-player/{id}
+  #         method: get
+  #         cors: ${file(../../serverless.common.yml):cors}
+  #         integration: lambda
+  #         response:
+  #           headers:
+  #             SET-COOKIE: integration.response.body.cookie1
+  #             SET-COOKIe: integration.response.body.cookie2
+  #             SET-COOKie: integration.response.body.cookie3
+  #             Content-Type: "'text/html'"
+  #           template: $input.path('$.html')
+  # avatar:
+  #   handler: index.avatar 
+  #   events:
+  #     - http: 
+  #         path: avatar/{id}
+  #         method: get
+  #         cors: ${file(../../serverless.common.yml):cors}
+  #         integration: lambda
+  #         response:
+  #           headers:
+  #             Location: integration.response.body.location
+  #           statusCodes:
+  #               302:
+  #                   pattern: ''
