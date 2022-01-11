@@ -42,7 +42,7 @@ export const uploadSetting = async (event) => {
     
     try {
 
-        const caller: CheckCallerResult = await checkCaller(event, { apiName, needAuthentication:true });
+        const caller: CheckCallerResult = await checkCaller(event, { apiName });
 
         if (caller.type == 'STOP') return onSuccess(caller);
         if (caller.type == 'ERROR') throw caller.error;
