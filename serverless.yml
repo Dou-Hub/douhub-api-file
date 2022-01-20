@@ -38,6 +38,15 @@ functions:
           cors: ${file(../serverless.common.yml):cors}
           integration: lambda
           response: ${file(../serverless.common.yml):response}
+  getCloudFrontSignedUrl: 
+    handler: index.getCloudFrontSignedUrl 
+    events:
+      - http: 
+          path: cf-signed-url
+          method: get
+          cors: ${file(../serverless.common.yml):cors}
+          integration: lambda
+          response: ${file(../serverless.common.yml):response}
 
   # uploadFile: 
   #   handler: index.uploadFile 

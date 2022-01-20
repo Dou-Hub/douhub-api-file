@@ -24,17 +24,9 @@ import {
     getBooleanValueOfEvent,
     getIntValueOfEvent
 } from 'douhub-helper-lambda';
-import {isNumber} from 'lodash';
+import {isNil, isNumber} from 'lodash';
 import { _track, isNonEmptyString, getFileType, getContentType } from 'douhub-helper-util';
-import { s3SignedUrl, getS3, RESOURCE_PREFIX} from 'douhub-helper-service';
-
-// import _ from "../../libs/helper";
-// import { HTTPERROR_400, HTTPERROR_403 } from "../../shared/libs/constants";
-// import cosmosDb from "../../libs/cosmos-db";
-// import s3 from "../../libs/s3";
-// import { checkRecordPrivilege } from "../../shared/libs/authorization";
-// import { renderVideoPlayer } from './html-video-player';
-// import cloudFront from "../../libs/cloud-front";
+import { s3SignedUrl, cloudFrontSignedUrl, RESOURCE_PREFIX} from 'douhub-helper-service';
 
 export const uploadSetting = async (event) => {
 
@@ -107,6 +99,45 @@ export const uploadSetting = async (event) => {
         const url = await s3SignedUrl( s3BucketName, s3FileName, acl, expires);
 
         return onSuccess({s3BucketName, s3FileName, url, type, contentType, expires });
+    }
+    catch (error:any) {
+        if (_track) console.error({ error });
+        throw new Error(JSON.stringify(onError({
+            ...HTTPERROR_500,
+            source: apiName
+        }, error)));
+    }
+};
+
+export const getCloudFrontSignedUrl = async (event) => {
+
+    const apiName = 'file.cloudFrontSignedUrl';
+    
+    try {
+
+        const caller: CheckCallerResult = await checkCaller(event, { apiName });
+
+        if (caller.type == 'STOP') return onSuccess(caller);
+        if (caller.type == 'ERROR') throw caller.error;
+
+        const url = getPropValueOfEvent(event, 'url');
+        if (!isNonEmptyString(url)) {
+            throw {
+                ...HTTPERROR_400,
+                type: ERROR_PARAMETER_MISSING,
+                source: apiName,
+                detail: {
+                    reason: 'The url does not exist.'
+                }
+            }
+        }
+
+        const EXPIRES_50YERS = 50 * 365 * 24 * 60 * 60;
+        const expires = getIntValueOfEvent(event, 'expires', EXPIRES_50YERS);
+        // const s3BucketName = `https://${RESOURCE_PREFIX}-${type.toLowerCase()}/${s3FileName}`;
+        const signedUrl = await cloudFrontSignedUrl( url, !isNil(expires)?expires:EXPIRES_50YERS);
+
+        return onSuccess({url, signedUrl, expires });
     }
     catch (error:any) {
         if (_track) console.error({ error });
@@ -263,15 +294,6 @@ export const uploadSetting = async (event) => {
 //     }
 // }
 
-// const getExpireInSeconds = () => {
-//     const expiredDate = new Date();
-//     expiredDate.setHours(expiredDate.getHours() + 2); //2hrs
-//     expiredDate.setMinutes(59);
-//     expiredDate.setSeconds(59);
-
-//     const now = new Date();
-//     return Math.round((expiredDate - now) / 1000);
-// }
 
 // const retrieveFileInternal = async (cx, id, skipSecurityCheck) => {
 
