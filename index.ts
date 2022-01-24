@@ -28,6 +28,7 @@ import {isNil, isNumber} from 'lodash';
 import { _track, isNonEmptyString, getFileType, getContentType } from 'douhub-helper-util';
 import { s3SignedUrl, cloudFrontSignedUrl, RESOURCE_PREFIX} from 'douhub-helper-service';
 
+
 export const uploadSetting = async (event) => {
 
     const apiName = 'file.uploadSetting';
