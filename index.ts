@@ -1,30 +1,10 @@
-//  COPYRIGHT:       DouHub Inc. (C) 2021 All Right Reserved
-//  COMPANY URL:     https://www.douhub.com/
-//  CONTACT:         developer@douhub.com
-// 
-//  This source is subject to the DouHub License Agreements. 
-// 
-//  Our EULAs define the terms of use and license for each DouHub product. 
-//  Whenever you install a DouHub product or research DouHub source code file, you will be prompted to review and accept the terms of our EULA. 
-//  If you decline the terms of the EULA, the installation should be aborted and you should remove any and all copies of our products and source code from your computer. 
-//  If you accept the terms of our EULA, you must abide by all its terms as long as our technologies are being employed within your organization and within your applications.
-// 
-//  THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY
-//  OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT
-//  LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
-//  FITNESS FOR A PARTICULAR PURPOSE.
-// 
-//  ALL OTHER RIGHTS RESERVED
-
-
 import {
-    HTTPERROR_500, onSuccess, onError, LambdaResponse,
-    CheckCallerResult, CheckCallerSettings, checkCaller,
-    getPropValueOfEvent, getObjectValueOfEvent, HTTPERROR_400, ERROR_PARAMETER_MISSING,
-    getBooleanValueOfEvent,
+    HTTPERROR_500, onSuccess, onError, 
+    CheckCallerResult, checkCaller,
+    getPropValueOfEvent, HTTPERROR_400, ERROR_PARAMETER_MISSING,
     getIntValueOfEvent
 } from 'douhub-helper-lambda';
-import {isNil, isNumber} from 'lodash';
+import {isNil} from 'lodash';
 import { _track, isNonEmptyString, getFileType, getContentType } from 'douhub-helper-util';
 import { s3SignedUrl, cloudFrontSignedUrl, RESOURCE_PREFIX} from 'douhub-helper-service';
 

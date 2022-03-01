@@ -13,3 +13,8 @@ Select the CloudFront distribution that’s associated with the S3 bucket you ch
 CLOUDFRONT_PUBLIC_KEY: this use the key created in Public Key
 CLOUD_FRONT_PRIVATE_KEY: this use the private key from   "IAM" -> "Security Credentials" -> CloudFront Key Pairs
 
+## "The bucket does not allow ACLs" Error
+If you run into "The bucket does not allow ACLs" error when uploading the file
+Go to the "Edit Object Ownership" page of S3 bucket settings from the url below
+https://s3.console.aws.amazon.com/s3/bucket/bandup-us-prod-document/property/oo/edit?region=us-east-1
+Enable ACL
